@@ -4,7 +4,7 @@ const Sequelize = require("Sequelize");
 //Create constance and link to model
 // จะทำงาน แม้ว่ายังไม่มีการกด link ก็ตาม
 const rfid_table = require("./../model/master_card");
-
+const bus_table = require("./../model/master_bus_text");
 const constance = require("./../constance/constance");
 const bcrypt = require("bcryptjs");
 const formidable = require("formidable");
@@ -269,7 +269,7 @@ router.patch("/del_all", async (req, res) => {
 router.post("/plate", async (req, res) => {
   try {
     const { plate_id } = req.body;
-    let dbPassword = await rfid_table.findOne({ where: { plate_id } });
+    let dbPassword = await bus_table.findOne({ where: { plate_id } });
 
     if (dbPassword == null) {
       // if not found
@@ -303,7 +303,7 @@ router.post("/all_vender", async (req, res) => {
       `
         SELECT plate_id 
       --  FROM driver_attendance.master_rfids
-        FROM driver_attendance.master_buses
+        FROM driver_attendance.master_bus_texts
           ` +
         command_level +
         `
