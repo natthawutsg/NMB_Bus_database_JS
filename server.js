@@ -42,6 +42,10 @@ app.use("/bus_text", require("./api/api_bus_text"));
 app.use("/bus_tax", require("./api/api_bus_tax"));
 app.use("/bus_insurance", require("./api/api_bus_insurance"));
 app.use("/bus_inspection", require("./api/api_bus_inspection"));
+
+app.use("/shift", require("./api/api_shift"));
+app.use("/route", require("./api/api_route"));
+app.use("/data_route", require("./api/api_data_route"));
 //Port ที่เชือมมาที่ BackEnd
 app.listen(1800, () => {
   console.log(".........Backend is running........");

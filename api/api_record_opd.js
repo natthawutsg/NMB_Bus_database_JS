@@ -10,8 +10,10 @@ const bcrypt = require("bcryptjs");
 //select
 
 router.post("/in", async (req, res) => {
+  console.log(req.body);
   try {
     let insert_result = await opd_table.create(req.body); //await คือรอให้ส่ง ข้อมูลก่อนจึงตอบ
+    console.log(insert_result);
     res.json({ result: insert_result, api_result: constance.result_ok });
   } catch (error) {
     res.json({ result: error, api_result: constance.result_nok });

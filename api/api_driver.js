@@ -21,39 +21,45 @@ router.post("/all", async (req, res) => {
   }
   try {
     let result = await driver_table.sequelize.query(
-      `SELECT master_drivers.emp_no,license_date,driver_name
+      `SELECT master_rfids.emp_no
+      ,rfid
+      -- ,master_drivers.emp_no 
+      ,license_date,driver_name
       ,if(master_drivers.picType1 is null or master_drivers.picType1 ='','none','') as icon_pic  
-      ,TIMESTAMPDIFF(DAY, CURDATE(), license_date) as license_remain,vender
-      ,case  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else ''
-                    end as case_color
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  ''
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else 'none'
-                    end as display_green
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else 'none'
-                    end as display_yellow
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  ''
-                    else ''
-                    end as display_red
-       FROM driver_attendance.master_drivers
-       left join master_rfids   on master_rfids.emp_no = master_drivers.emp_no
-       where master_drivers.emp_no <> ''
+            ,TIMESTAMPDIFF(DAY, CURDATE(), license_date) as license_remain,vender
+            ,case  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else ''
+                          end as case_color
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  ''
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else 'none'
+                          end as display_green
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else 'none'
+                          end as display_yellow
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  ''
+                          else ''
+                          end as display_red
+      
+      
+      FROM driver_attendance.master_rfids
+      left join master_drivers
+      on  master_rfids.emp_no = master_drivers.emp_no
+       where master_rfids.emp_no <> ''
               ` +
         command_level +
         ``
@@ -75,39 +81,45 @@ router.post("/incomplete", async (req, res) => {
   }
   try {
     let result = await driver_table.sequelize.query(
-      `SELECT master_drivers.emp_no,license_date,driver_name
+      `SELECT master_rfids.emp_no
+      ,rfid
+      -- ,master_drivers.emp_no 
+      ,license_date,driver_name
       ,if(master_drivers.picType1 is null or master_drivers.picType1 ='','none','') as icon_pic  
-      ,TIMESTAMPDIFF(DAY, CURDATE(), license_date) as license_remain,vender
-      ,case  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else ''
-                    end as case_color
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  ''
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else 'none'
-                    end as display_green
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else 'none'
-                    end as display_yellow
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  ''
-                    else ''
-                    end as display_red
-       FROM driver_attendance.master_drivers
-       left join master_rfids   on master_rfids.emp_no = master_drivers.emp_no
-       where master_drivers.emp_no <> ''
+            ,TIMESTAMPDIFF(DAY, CURDATE(), license_date) as license_remain,vender
+            ,case  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else ''
+                          end as case_color
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  ''
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else 'none'
+                          end as display_green
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else 'none'
+                          end as display_yellow
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  ''
+                          else ''
+                          end as display_red
+      
+      
+      FROM driver_attendance.master_rfids
+      left join master_drivers
+      on  master_rfids.emp_no = master_drivers.emp_no
+       where master_rfids.emp_no <> ''
               ` +
         command_level +
         `and (master_drivers.picType1 is null or master_drivers.picType1 ='')`
@@ -129,39 +141,45 @@ router.post("/expire", async (req, res) => {
   }
   try {
     let result = await driver_table.sequelize.query(
-      `SELECT master_drivers.emp_no,license_date,driver_name
+      `SELECT master_rfids.emp_no
+      ,rfid
+      -- ,master_drivers.emp_no 
+      ,license_date,driver_name
       ,if(master_drivers.picType1 is null or master_drivers.picType1 ='','none','') as icon_pic  
-      ,TIMESTAMPDIFF(DAY, CURDATE(), license_date) as license_remain,vender
-      ,case  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else ''
-                    end as case_color
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  ''
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else 'none'
-                    end as display_green
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else 'none'
-                    end as display_yellow
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  ''
-                    else ''
-                    end as display_red
-       FROM driver_attendance.master_drivers
-       left join master_rfids   on master_rfids.emp_no = master_drivers.emp_no
-       where master_drivers.emp_no <> ''
+            ,TIMESTAMPDIFF(DAY, CURDATE(), license_date) as license_remain,vender
+            ,case  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else ''
+                          end as case_color
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  ''
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else 'none'
+                          end as display_green
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else 'none'
+                          end as display_yellow
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  ''
+                          else ''
+                          end as display_red
+      
+      
+      FROM driver_attendance.master_rfids
+      left join master_drivers
+      on  master_rfids.emp_no = master_drivers.emp_no
+       where master_rfids.emp_no <> ''
               ` +
         command_level +
         `and TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 `
@@ -183,39 +201,45 @@ router.post("/alert", async (req, res) => {
   }
   try {
     let result = await driver_table.sequelize.query(
-      `SELECT master_drivers.emp_no,license_date,driver_name
+      `SELECT master_rfids.emp_no
+      ,rfid
+      -- ,master_drivers.emp_no 
+      ,license_date,driver_name
       ,if(master_drivers.picType1 is null or master_drivers.picType1 ='','none','') as icon_pic  
-      ,TIMESTAMPDIFF(DAY, CURDATE(), license_date) as license_remain,vender
-      ,case  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else ''
-                    end as case_color
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  ''
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else 'none'
-                    end as display_green
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else 'none'
-                    end as display_yellow
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  ''
-                    else ''
-                    end as display_red
-       FROM driver_attendance.master_drivers
-       left join master_rfids   on master_rfids.emp_no = master_drivers.emp_no
-       where master_drivers.emp_no <> ''
+            ,TIMESTAMPDIFF(DAY, CURDATE(), license_date) as license_remain,vender
+            ,case  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else ''
+                          end as case_color
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  ''
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else 'none'
+                          end as display_green
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else 'none'
+                          end as display_yellow
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  ''
+                          else ''
+                          end as display_red
+      
+      
+      FROM driver_attendance.master_rfids
+      left join master_drivers
+      on  master_rfids.emp_no = master_drivers.emp_no
+       where master_rfids.emp_no <> ''
               ` +
         command_level +
         `and TIMESTAMPDIFF(DAY, CURDATE(), license_date) between 0  and 44 `
@@ -237,39 +261,45 @@ router.post("/good", async (req, res) => {
   }
   try {
     let result = await driver_table.sequelize.query(
-      `SELECT master_drivers.emp_no,license_date,driver_name
+      `SELECT master_rfids.emp_no
+      ,rfid
+      -- ,master_drivers.emp_no 
+      ,license_date,driver_name
       ,if(master_drivers.picType1 is null or master_drivers.picType1 ='','none','') as icon_pic  
-      ,TIMESTAMPDIFF(DAY, CURDATE(), license_date) as license_remain,vender
-      ,case  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else ''
-                    end as case_color
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  ''
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else 'none'
-                    end as display_green
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
-                    else 'none'
-                    end as display_yellow
-              ,case 
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
-                  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
-                    when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  ''
-                    else ''
-                    end as display_red
-       FROM driver_attendance.master_drivers
-       left join master_rfids   on master_rfids.emp_no = master_drivers.emp_no
-       where master_drivers.emp_no <> ''
+            ,TIMESTAMPDIFF(DAY, CURDATE(), license_date) as license_remain,vender
+            ,case  when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else ''
+                          end as case_color
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  ''
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else 'none'
+                          end as display_green
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  'none'
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  ''	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  'none'
+                          else 'none'
+                          end as display_yellow
+                    ,case 
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) >= 45 then  'none'
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 0 then  ''
+                        when TIMESTAMPDIFF(DAY, CURDATE(), license_date) < 45 then  'none'	
+                          when TIMESTAMPDIFF(DAY, CURDATE(), license_date) is null then  ''
+                          else ''
+                          end as display_red
+      
+      
+      FROM driver_attendance.master_rfids
+      left join master_drivers
+      on  master_rfids.emp_no = master_drivers.emp_no
+       where master_rfids.emp_no <> ''
               ` +
         command_level +
         `and TIMESTAMPDIFF(DAY, CURDATE(), license_date)  > 44 `

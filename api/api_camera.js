@@ -30,7 +30,6 @@ function formatDate(date) {
   return [year, month, day].join("-");
 }
 router.post("/find_last", async (req, res) => {
-   
   try {
     // const { emp_no } = req.body;
     let dbPassword = await camera_table.sequelize.query(
@@ -60,11 +59,11 @@ router.post("/in", async (req, res) => {
 router.post("/report_raw", async (req, res) => {
   console.log(req.body);
   var command_level = "";
-   // if (req.body.lv == "Admin" || req.body.lv == "Super") {
-    if (req.body.lv == "Admin" ) {
-    command_level = ``
+  // if (req.body.lv == "Admin" || req.body.lv == "Super") {
+  if (req.body.lv == "Admin") {
+    command_level = ``;
   } else {
-    command_level = ` and vender = '${req.body.vender}'`
+    command_level = ` and vender = '${req.body.vender}'`;
   }
   try {
     // const { emp_no } = req.body;
@@ -73,7 +72,9 @@ router.post("/report_raw", async (req, res) => {
           SELECT id,mfgdate,time,rfid,emp_no,driver_name,plate_id,vender ,remark,camera_condition 
           FROM driver_attendance.data_cameras
           where mfgdate between '${req.body.date_start}' and '${req.body.date_end}'
-          `+command_level+`
+          ` +
+        command_level +
+        `
           ;
             `
     );
@@ -89,14 +90,13 @@ router.post("/report_raw", async (req, res) => {
 router.post("/report_pivot", async (req, res) => {
   console.log(req.body);
   var command_level = "";
-   // if (req.body.lv == "Admin" || req.body.lv == "Super") {
-    if (req.body.lv == "Admin" ) {
-    command_level = ``
+  // if (req.body.lv == "Admin" || req.body.lv == "Super") {
+  if (req.body.lv == "Admin") {
+    command_level = ``;
   } else {
-    command_level = ` and vender = '${req.body.vender}'`
+    command_level = ` and vender = '${req.body.vender}'`;
   }
   try {
-
     let dbPassword = await camera_table.sequelize.query(
       `
       SELECT
@@ -106,79 +106,80 @@ router.post("/report_pivot", async (req, res) => {
      
  FROM driver_attendance.data_cameras
  where mfgdate between '${req.body.date_start}' and '${req.body.date_end}'
- `+command_level+`
+ ` +
+        command_level +
+        `
   GROUP BY mfgdate;
             `
     );
     res.json({
       result: dbPassword[0],
       api_result: constance.result_ok,
-    //   list_date,
+      //   list_date,
     });
   } catch (error) {
     console.log(error);
     res.json({ error, api_result: constance.result_nok });
   }
-
-
 });
 router.post("/report_excel", async (req, res) => {
   console.log(req.body);
   var command_level = "";
   // if (req.body.lv == "Admin" || req.body.lv == "Super") {
-    if (req.body.lv == "Admin" ) {
-    command_level = ``
+  if (req.body.lv == "Admin") {
+    command_level = ``;
   } else {
-    command_level = ` where vender = '${req.body.vender}'`
+    command_level = ` and vender = '${req.body.vender}'`;
   }
-
 
   var list_date = [];
   list_date = getDatesInRange(new Date(req.body.date_start), new Date(req.body.date_end));
   console.log("list_date", list_date);
   var sql_command = "";
-  
+  var concat_command = "";
   for (let index = 0; index < list_date.length; index++) {
-    sql_command = sql_command + `,max(case when mfgdate = '` + list_date[index] + `' then camera_condition end) '` + list_date[index] + `'`;
+    sql_command =
+      sql_command + `,COALESCE(max(case when mfgdate = '` + list_date[index] + `' then camera_condition end),'')  '` + list_date[index] + `'`;
+    concat_command = concat_command + `,COALESCE(max(case when mfgdate = '` + list_date[index] + `' then camera_condition end),'') `;
   }
-
+  concat_command = `,CONCAT (''` + concat_command + `) 'dd'`;
 
   try {
-
     let dbPassword = await camera_table.sequelize.query(
-
-      `
-      WITH tb1 AS (SELECT  master_rfids.emp_no,master_rfids.driver_name,master_rfids.plate_id,master_rfids.vender,mfgdate ,camera_condition
-        FROM driver_attendance.master_rfids
-        left join  driver_attendance.data_cameras on master_rfids.emp_no = data_cameras.emp_no
-      
-          )   
-      
-      select 
-      emp_no,plate_id
+      ` WITH tb1 AS (SELECT * FROM driver_attendance.data_cameras
+        where mfgdate between '${req.body.date_start}' and '${req.body.date_end}'
+        ` +
+        command_level +
+        `
+        )
+        ,tb2 as (
+         select plate_id,vender,mfgdate,camera_condition, row_number() over (partition by plate_id order by plate_id) rn
+           from tb1
+           where plate_id <>''
+           )
+           ,tb3 as (
+            select
+            plate_id
       ` +
-      sql_command +
-      `
-  
-  from (
-    select emp_no,driver_name,plate_id,vender,mfgdate,camera_condition, row_number() over (partition by emp_no,plate_id order by emp_no) rn
-   from tb1
-    `+command_level+`
-  ) t
-  group by emp_no,plate_id
-            `
+        sql_command +
+        concat_command +
+        `
+        from tb2 t
+        group by plate_id 
+        )
+        select * from tb3
+       where dd <>''
+        `
     );
     res.json({
       result: dbPassword[0],
       api_result: constance.result_ok,
-    //   list_date,
+      //   list_date,
     });
   } catch (error) {
     console.log(error);
     res.json({ error, api_result: constance.result_nok });
   }
-
-
 });
 router.patch("/delete", async (req, res) => {
   try {
@@ -195,18 +196,20 @@ router.patch("/delete", async (req, res) => {
 router.post("/top_5", async (req, res) => {
   var command_level = "";
   // if (req.body.lv == "Admin" || req.body.lv == "Super") {
-   if (req.body.lv == "Admin" ) {
-   command_level = ``
- } else {
-   command_level = ` where vender = '${req.body.vender}'`
- }
+  if (req.body.lv == "Admin") {
+    command_level = ``;
+  } else {
+    command_level = ` where vender = '${req.body.vender}'`;
+  }
   try {
     // const { emp_no } = req.body;
     let dbPassword = await camera_table.sequelize.query(
       `SELECT mfgdate,time,emp_no,driver_name,plate_id,vender,camera_condition 
       ,if(camera_condition = 'NG','red','green') as color
        FROM driver_attendance.data_cameras
-       `+command_level+`
+       ` +
+        command_level +
+        `
       order by timestamp desc limit 5;     
         `
     );
